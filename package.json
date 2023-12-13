@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "npm": "10.2.5"
+  },
   "scripts": {
     "dev": "tsx watch server.ts",
     "start": "node dist/server.js",
