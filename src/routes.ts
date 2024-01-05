@@ -1,11 +1,22 @@
 import express from 'express'
 import api from './api'
 
+import userController from './controllers/userController'
+import authController from './controllers/authController'
+
+import { ensureAth } from './middlewares/ensureAuth'
+
 const routes = express.Router()
 
-routes.get('/', (require, response) => {
-  return response.send('Conectado com sucesso!')
-})
+routes.get('/authenticated/validation', ensureAth, authController.startAppValidations)
+routes.post('/authenticated', authController.auth)
+routes.post('/authenticated/google', authController.authGoogle)
+
+routes.get('/user', ensureAth, userController.index)
+routes.post('/user', ensureAth, userController.create)
+routes.post('/user/google', ensureAth, userController.createWithGoogle)
+routes.post('/user/active', userController.active)
+
 routes.get('/representative', async (require, response) => {
   const { data } = await api.get('/representative')
   return response.json(data)
@@ -54,5 +65,4 @@ routes.get('/report/customerByRepresentative', async (require, response) => {
 
   return response.json(data)
 })
-
 export default routes
