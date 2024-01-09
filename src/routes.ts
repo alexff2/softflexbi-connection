@@ -14,6 +14,7 @@ routes.post('/authenticated/google', authController.authGoogle)
 
 routes.get('/user', ensureAth, userController.index)
 routes.post('/user', ensureAth, userController.create)
+routes.patch('/user/password', ensureAth, userController.updatePassword)
 routes.post('/user/google', ensureAth, userController.createWithGoogle)
 routes.post('/user/active', userController.active)
 
@@ -41,7 +42,7 @@ routes.get('/customers/:idRepresentative', async (require, response) => {
   })
   return response.json(data)
 })
-routes.get('/report/dre', async (require, response) => {
+routes.get('/report/dre', ensureAth, async (require, response) => {
   try {
     const { dataInicial, dataFinal } = require.query
   

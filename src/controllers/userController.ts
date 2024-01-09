@@ -100,5 +100,34 @@ export default {
     })
 
     return res.status(200).json(result)
+  },
+  async updatePassword( req: Request, res: Response ) {
+    const email = req.userEmail
+    const { password, rePassword } = req.body
+
+    if (!password || !rePassword) {
+      throw new AppError('Informe todos os campos')
+    }
+
+    if (password.length < 6) {
+      throw new AppError('Senha deve conter no mínimo 6 caracteres!')
+    }
+
+    if (password !== rePassword) {
+      throw new AppError('Senhas não são iguais!')
+    }
+
+    const passwordHash = await hash(password, 8)
+
+    await prisma.user.update({
+      where: {
+        email
+      },
+      data: {
+        password: passwordHash
+      }
+    })
+
+    return res.status(201).json('Senha Alterada')
   }
 }
