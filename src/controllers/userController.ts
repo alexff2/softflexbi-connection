@@ -6,7 +6,9 @@ import AppError from '../utils/AppError'
 
 export default {
   async index( req: Request, res: Response ){
-    const users = await prisma.user.findMany()
+    const users = await prisma.user.findMany({
+      orderBy: { id: 'asc' }
+    })
 
     return res.status(201).json(users)
   },

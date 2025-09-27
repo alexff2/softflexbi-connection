@@ -44,13 +44,32 @@ routes.get('/customers/:idRepresentative', async (require, response) => {
 })
 routes.get('/report/dre', ensureAth, async (require, response) => {
   try {
-    const { dataInicial, dataFinal } = require.query
-  
-    const { data } = await api.get('/report/dre', {
-      params: { dataFinal, dataInicial }
-    })
-  
-    return response.json(data)
+    const { dataInicial, dataFinal, empresa } = require.query
+
+    let result
+
+    if (empresa === '1') {
+      const { data } = await api.get('/report/dre', {
+        params: { dataFinal, dataInicial }
+      })
+
+      result = data
+    }
+
+    if (empresa === '0') {
+      api.interceptors.request.use(config => {
+        config.baseURL = process.env.URL_API_MATRIZ
+        return config
+      })
+
+      const { data } = await api.get('/report/dre', {
+        params: { dataFinal, dataInicial }
+      })
+
+      result = data
+    }
+
+    return response.json(result)
   } catch (error) {
     console.log(error)
 
