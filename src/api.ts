@@ -1,7 +1,11 @@
 import axios from 'axios'
 
-const api = axios.create({
+const api_filial = axios.create({
   baseURL: process.env.URL_API_DB
 })
 
-export default api
+const api_matriz = axios.create({
+  baseURL: process.env.URL_API_MATRIZ
+})
+
+export { api_filial, api_matriz }

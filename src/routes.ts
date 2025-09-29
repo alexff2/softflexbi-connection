@@ -1,5 +1,5 @@
 import express from 'express'
-import api from './api'
+import { api_filial, api_matriz } from './api'
 
 import userController from './controllers/userController'
 import authController from './controllers/authController'
@@ -19,13 +19,13 @@ routes.post('/user/google', ensureAth, userController.createWithGoogle)
 routes.post('/user/active', userController.active)
 
 routes.get('/representative', async (require, response) => {
-  const { data } = await api.get('/representative')
+  const { data } = await api_filial.get('/representative')
   return response.json(data)
 })
 routes.get('/representative/description', async (require, response) => {
   const { description } = require.query
 
-  const { data } = await api.get('/representative/description', {
+  const { data } = await api_filial.get('/representative/description', {
     params: {
       description
     }
@@ -37,7 +37,7 @@ routes.get('/customers/:idRepresentative', async (require, response) => {
   const { idRepresentative } = require.params
   const { idShop, route } = require.query
 
-  const { data } = await api.get(`/customers/${idRepresentative}`, {
+  const { data } = await api_filial.get(`/customers/${idRepresentative}`, {
     params: { idShop, route }
   })
   return response.json(data)
@@ -45,31 +45,17 @@ routes.get('/customers/:idRepresentative', async (require, response) => {
 routes.get('/report/dre', ensureAth, async (require, response) => {
   try {
     const { dataInicial, dataFinal, empresa } = require.query
-
-    let result
-
-    if (empresa === '1') {
-      const { data } = await api.get('/report/dre', {
-        params: { dataFinal, dataInicial }
-      })
-
-      result = data
-    }
-
+    let api = api_filial
+    
     if (empresa === '0') {
-      api.interceptors.request.use(config => {
-        config.baseURL = process.env.URL_API_MATRIZ
-        return config
-      })
-
-      const { data } = await api.get('/report/dre', {
-        params: { dataFinal, dataInicial }
-      })
-
-      result = data
+      api = api_matriz
     }
 
-    return response.json(result)
+    const { data } = await api.get('/report/dre', {
+      params: { dataFinal, dataInicial }
+    })
+
+    return response.json(data)
   } catch (error) {
     console.log(error)
 
@@ -79,7 +65,7 @@ routes.get('/report/dre', ensureAth, async (require, response) => {
 routes.get('/report/customerByRepresentative', async (require, response) => {
   const { date, idRepresentative, idEstablishment, idShop, route } = require.query
 
-  const { data } = await api.get('/report/customerByRepresentative', {
+  const { data } = await api_filial.get('/report/customerByRepresentative', {
     params: { date, idRepresentative, idEstablishment, idShop, route }
   })
 
