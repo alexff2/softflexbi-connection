@@ -8,6 +8,17 @@ import { ensureAth } from './middlewares/ensureAuth'
 
 const routes = express.Router()
 
+type TPl = {
+  DATA: Date
+  VALOR_SAIDA: number
+  VALOR_ENTRADA: number
+  NUM_DOCUMENTO: number
+  CLIENTE_FORNECEDOR: string
+  HISTORICO: string
+  ID_PORTADOR: number
+  ID_PLAN_CONTA: number
+}
+
 routes.get('/authenticated/validation', ensureAth, authController.startAppValidations)
 routes.post('/authenticated', authController.auth)
 routes.post('/authenticated/google', authController.authGoogle)
@@ -70,5 +81,27 @@ routes.get('/report/customerByRepresentative', async (require, response) => {
   })
 
   return response.json(data)
+})
+routes.get('/report/accounting-plan-georgia-titles', async (require, response) => {
+  try {
+    const { startDate, endDate } = require.query
+
+    const { data } = await api_matriz.get<TPl[]>('/report/contabilidade', {
+      params: { 
+        dataInicial: startDate,
+        dataFinal: endDate
+       }
+    })
+
+    const dataResponse = data.map(item => ({
+      ...item,
+      DATA: new Date(item.DATA).toLocaleDateString('pt-BR'),
+    }))
+  
+    return response.json({ ok: true, data: dataResponse})
+  } catch (error) {
+    console.log(error)
+    return response.status(500).json({ ok: false, error: 'Internal server error' })
+  }
 })
 export default routes
