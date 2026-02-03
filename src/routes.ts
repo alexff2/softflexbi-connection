@@ -29,7 +29,7 @@ routes.patch('/user/password', ensureAth, userController.updatePassword)
 routes.post('/user/google', ensureAth, userController.createWithGoogle)
 routes.post('/user/active', userController.active)
 
-routes.get('/representative', async (require, response) => {
+routes.get('/representative', async (_require, response) => {
   const { data } = await api_filial.get('/representative')
   return response.json(data)
 })
@@ -55,7 +55,7 @@ routes.get('/customers/:idRepresentative', async (require, response) => {
 })
 routes.get('/report/dre', ensureAth, async (require, response) => {
   try {
-    const { dataInicial, dataFinal, empresa, tipo } = require.query
+    const { dataInicial, dataFinal, empresa, tipo, dataInicialCmp, dataFinalCmp } = require.query
     let api = api_filial
     
     if (empresa === '0') {
@@ -63,7 +63,7 @@ routes.get('/report/dre', ensureAth, async (require, response) => {
     }
 
     const { data } = await api.get('/report/dre', {
-      params: { dataFinal, dataInicial, tipo }
+      params: { dataFinal, dataInicial, tipo, dataInicialCmp, dataFinalCmp }
     })
 
     return response.json(data)
