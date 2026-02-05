@@ -55,7 +55,8 @@ routes.get('/customers/:idRepresentative', async (require, response) => {
 })
 routes.get('/report/dre', ensureAth, async (require, response) => {
   try {
-    const { dataInicial, dataFinal, empresa, tipo, dataInicialCmp, dataFinalCmp } = require.query
+    const { dataInicial, dataFinal, empresa, tipo, dataInicialCmp, dataFinalCmp, denominador } = require.query
+    console.log({ denominador })
     let api = api_filial
     
     if (empresa === '0') {
@@ -63,7 +64,7 @@ routes.get('/report/dre', ensureAth, async (require, response) => {
     }
 
     const { data } = await api.get('/report/dre', {
-      params: { dataFinal, dataInicial, tipo, dataInicialCmp, dataFinalCmp }
+      params: { dataFinal, dataInicial, tipo, dataInicialCmp, dataFinalCmp, denominador: Number(denominador) }
     })
 
     return response.json(data)
